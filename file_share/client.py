@@ -23,8 +23,6 @@ for file in os.listdir(send_path):
     filepath = send_path + "/" + filename
     filesize = os.path.getsize(filepath)
 
-    s.send(f"{HEADER}{filename}{SEPARATOR}{filesize}".encode())
-
     progress = tqdm.tqdm(
         range(filesize),
         f"Sending {filename}, size {filesize}",
@@ -32,6 +30,8 @@ for file in os.listdir(send_path):
         unit_scale=True,
         unit_divisor=1024,
     )
+
+    s.send(f"{HEADER}{filename}{SEPARATOR}{filesize}".encode())
 
     with open(filepath, "rb") as f:
         while True:

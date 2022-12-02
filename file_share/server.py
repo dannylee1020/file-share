@@ -3,6 +3,7 @@ import tqdm
 import os
 from threading import Thread
 import threading
+import typer
 
 SERVER_HOST = "0.0.0.0"
 SERVER_PORT = 5001
@@ -12,8 +13,10 @@ HEADER = "<HEADER>"
 DATA = "<DATA>"
 N_THREADS = 4
 
+app = typer.Typer(name="server")
 
-def handle_client(conn, addr, buffer_size=BUFFER_SIZE):
+
+def _handle_client(conn, addr, buffer_size=BUFFER_SIZE):
     print(f"Thread starting...")
     received = conn.recv(buffer_size).decode()
     header = received.split(HEADER)[1]
@@ -55,7 +58,8 @@ def handle_client(conn, addr, buffer_size=BUFFER_SIZE):
     f.close()
 
 
-def main():
+@app.command()
+def run_server():
     all_threads = []
 
     s = socket.socket()
@@ -68,8 +72,7 @@ def main():
         client_socket, address = s.accept()
         print(f"[+] {address} is connected!")
 
-        thread = Thread(
-            target=handle_client, args=(client_socket, address))
+        thread = Thread(target=_handle_client, args=(client_socket, address))
         thread.start()
         all_threads.append(thread)
 
@@ -83,4 +86,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    app()

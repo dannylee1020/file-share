@@ -1,8 +1,15 @@
 [tool.poetry]
 name = "file-share"
 version = "0.1.0"
-description = ""
+description = "simple file transfer app utilizing socket and threading"
 authors = ["Daniel Lee <daniel.lee@circleci.com>"]
+
+packages =[
+    {include = "file_share"}
+]
+
+[tool.poetry.scripts]
+file-share = "file_share.main:run"
 
 [tool.poetry.dependencies]
 python = "^3.10"

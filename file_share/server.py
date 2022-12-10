@@ -5,6 +5,9 @@ from threading import Thread
 import threading
 import typer
 
+from file_share.crypto import load_key, decrypt, write_key
+from cryptography.fernet import Fernet
+
 SERVER_HOST = "0.0.0.0"
 SERVER_PORT = 5001
 BUFFER_SIZE = 4096
@@ -16,13 +19,13 @@ N_THREADS = 4
 app = typer.Typer(name="server")
 
 
-def _handle_client(conn, addr, buffer_size=BUFFER_SIZE):
+def _handle_client(conn, addr, key, buffer_size=BUFFER_SIZE):
     print(f"Thread starting...")
-    received = conn.recv(buffer_size).decode()
-    header = received.split(HEADER)[1]
 
-    filename, filesize = received.split(SEPARATOR)
-    filename = filename.split(HEADER)[1]
+    received = conn.recv(buffer_size).decode()
+    header = received.split(HEADER)[0]
+    data = received.split(HEADER)[1]
+    filename, filesize = header.split(SEPARATOR)
 
     filepath = os.path.abspath(
         os.path.join(
@@ -44,22 +47,27 @@ def _handle_client(conn, addr, buffer_size=BUFFER_SIZE):
         unit_divisor=1024,
     )
 
-    with open(filepath, "wb") as f:
-        while filesize > 0:
-            if filesize < buffer_size:
-                buffer_size = filesize
+    bytes_array = bytearray()
 
-            bytes_read = conn.recv(buffer_size)
-            f.write(bytes_read)
+    with open(filepath, "wb") as f:
+        while True:
+            bytes_read = conn.recv(BUFFER_SIZE)
+            if not bytes_read:
+                break
+            bytes_array.extend(bytes_read)
             progress.update(len(bytes_read))
 
-            filesize -= buffer_size
+        decrypt_data = decrypt(key, bytes(bytes_array))
+        f.write(decrypt_data)
 
     f.close()
 
 
 @app.command()
 def run_server():
+    write_key()
+    decrypt_key = load_key()
+
     all_threads = []
 
     s = socket.socket()
@@ -70,9 +78,11 @@ def run_server():
 
     for t in range(N_THREADS):
         client_socket, address = s.accept()
-        print(f"[+] {address} is connected!")
 
-        thread = Thread(target=_handle_client, args=(client_socket, address))
+        thread = Thread(
+            target=_handle_client,
+            args=(client_socket, address, decrypt_key),
+        )
         thread.start()
         all_threads.append(thread)
 

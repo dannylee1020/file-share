@@ -2,6 +2,11 @@ import socket
 import tqdm
 import os
 import typer
+from cryptography.fernet import Fernet
+import time
+
+from file_share.crypto import encrypt, write_key, load_key
+
 
 SEPARATOR = "<SEPARATOR>"
 HEADER = "<HEADER>"
@@ -18,6 +23,11 @@ app = typer.Typer(name="client")
 
 @app.command()
 def run_client():
+    """
+    Loop through each file in a directory and send the bytes to the server
+    """
+    encrypt_key = load_key()
+
     for file in os.listdir(send_path):
         s = socket.socket()
         print(f"[+] Connecting to {host}:{port}")
@@ -37,15 +47,22 @@ def run_client():
             unit_divisor=1024,
         )
 
-        s.send(f"{HEADER}{filename}{SEPARATOR}{filesize}".encode())
+        s.send(f"{filename}{SEPARATOR}{filesize}{HEADER}".encode())
+
+        bytes_array = bytearray()
 
         with open(filepath, "rb") as f:
             while True:
                 bytes_read = f.read(BUFFER_SIZE)
+
                 if not bytes_read:
                     break
-                s.sendall(bytes_read)
+
+                bytes_array.extend(bytes_read)
                 progress.update(len(bytes_read))
+
+            encrypt_data = encrypt(encrypt_key, bytes(bytes_array))
+            s.sendall(encrypt_data)
 
         s.close()
 

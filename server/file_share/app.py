@@ -8,6 +8,7 @@ from flask import (
     Response,
     jsonify,
     abort,
+    send_from_directory,
 )
 from werkzeug.utils import secure_filename
 
@@ -30,12 +31,6 @@ def allowed_file(filename):
 @app.route("/")
 def index():
     return render_template("index.html")
-    # return request.files
-
-
-# @app.route("/", methods=["POST"])
-# def test():
-#     return request.files
 
 
 @app.route("/", methods=["POST"])
@@ -48,15 +43,12 @@ def upload_file():
         abort(400)
     filename = secure_filename(uploaded_file.filename)
     uploaded_file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
-    print(filename, flush=True)
-    print(os.path.join(app.config["UPLOAD_FOLDER"], filename), flush=True)
+
     return render_template("index.html", res="upload successful")
 
 
 @app.route("/uploads/<filename>")
 def download(filename):
-    return send_from_directory(app.config["UPLOAD_PATH", filename])
-
-
-# if __name__ == "__main__":
-#     app.run()
+    return send_from_directory(
+        app.config["UPLOAD_FOLDER"], filename, as_attachment=True
+    )

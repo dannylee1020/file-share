@@ -1,2 +1,2 @@
 # Overview
-File sharing app with Flask on backend and React on frontend
+File Sharing webapp using React on the clientside and Express on the serverside.

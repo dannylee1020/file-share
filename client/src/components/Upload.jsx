@@ -8,14 +8,15 @@ function Upload() {
     };
 
     const handleSubmit = async (e) => {
-        let endpoint = "http://localhost:3000/";
-        let response = await fetch(endpoint, {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: e.target.files[0],
-        });
+        let endpoint = "http://localhost:3000";
 
-        console.log(response.json());
+        await fetch(endpoint, {
+            method: "POST",
+            headers: {"Content-Type": "multipart/form-data"},
+            body: e.target.files[0],
+        })
+            .then((res) => res.json())
+            .then((data) => console.log(data));
     };
 
     return (

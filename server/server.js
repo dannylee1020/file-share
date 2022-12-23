@@ -1,24 +1,16 @@
 import createError from "http-errors";
 import express from "express";
 import cors from "cors";
-import path from "path";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
+import path from "path";
 import fileUpload from "express-fileupload";
 import indexRouter from "./routes/index.js";
-
-// var createError = require("http-errors");
-// var express = require("express");
-// var path = require("path");
-// var cookieParser = require("cookie-parser");
-// var logger = require("morgan");
-// var fileUpload = require("express-fileupload");
-// var indexRouter = require("./routes/index");
 
 var app = express();
 var port = 3000;
 
-app.use(cors({credentials: true, origin: true}));
+app.use(cors());
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));

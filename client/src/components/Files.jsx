@@ -1,16 +1,9 @@
-import {useEffect, useState} from "react";
+import {useEffect} from "react";
 
 function Files(props) {
-    const [files, setFiles] = useState();
-
     useEffect(() => {
-        const fetchData = async () => {
-            let {data, error} = await props.fetchFiles();
-            data ? setFiles(data) : console.log(error);
-        };
-
-        fetchData().catch(console.error);
-    });
+        props.fetchFiles();
+    }, []);
 
     return (
         <div>
@@ -22,15 +15,17 @@ function Files(props) {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>{files}</tr>
-                    {/* {data.map((val, index) => {
-                        return (
-                            <tr key={index} className="border-b">
-                                <td className="py-2">{val.name}</td>
-                                <td></td>
-                            </tr>
-                        );
-                    })} */}
+                    {props.files ? (
+                        props.files.data.map((val, idx) => {
+                            return (
+                                <tr key={idx} className="border-b">
+                                    <td className="py-2">{val.name}</td>
+                                </tr>
+                            );
+                        })
+                    ) : (
+                        <tr></tr>
+                    )}
                 </tbody>
             </table>
         </div>

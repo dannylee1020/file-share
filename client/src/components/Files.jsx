@@ -5,6 +5,20 @@ function Files(props) {
         props.fetchFiles();
     }, []);
 
+    const handleClick = async (e) => {
+        let filename = e.target.textContent;
+        let endpoint = "http://localhost:3000/download";
+
+        await fetch(endpoint, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({filename}),
+        });
+    };
+
+    // TODO: when file is clicked for download, window should pop up to select where to store file
     return (
         <div>
             <table className="table-auto w-5/6">
@@ -18,8 +32,15 @@ function Files(props) {
                     {props.files ? (
                         props.files.data.map((val, idx) => {
                             return (
-                                <tr key={idx} className="border-b">
-                                    <td className="py-2">{val.name}</td>
+                                <tr
+                                    key={idx}
+                                    className="border-b hover:bg-gray-100"
+                                >
+                                    <td className="py-2">
+                                        <button onClick={handleClick}>
+                                            {val.name}
+                                        </button>
+                                    </td>
                                 </tr>
                             );
                         })

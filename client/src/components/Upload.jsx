@@ -9,11 +9,12 @@ function Upload() {
 
     const handleSubmit = async (e) => {
         let endpoint = "http://localhost:3000";
+        const formData = new FormData();
+        formData.append("file", e.target.files[0]);
 
         await fetch(endpoint, {
             method: "POST",
-            headers: {"Content-Type": "multipart/form-data"},
-            body: e.target.files[0],
+            body: formData,
         })
             .then((res) => res.json())
             .then((data) => console.log(data));
@@ -31,6 +32,7 @@ function Upload() {
             <input
                 ref={ref}
                 type="file"
+                name="file"
                 className="hidden"
                 onChange={handleSubmit}
             ></input>

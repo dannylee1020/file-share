@@ -8,6 +8,14 @@ const upload_file = async function (file, name) {
     return {data, error};
 };
 
+const download_file = async function (name) {
+    const {data, error} = await supabase.storage
+        .from("file-store")
+        .download(`test_folder/${name}`);
+
+    return {data, error};
+};
+
 const retrieve_files = async function () {
     const {data, error} = await supabase.storage
         .from("file-store")
@@ -18,4 +26,4 @@ const retrieve_files = async function () {
     return {data, error};
 };
 
-export {upload_file, retrieve_files};
+export {upload_file, retrieve_files, download_file};

@@ -4,7 +4,6 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
 import path from "path";
-import fileUpload from "express-fileupload";
 import indexRouter from "./routes/index.js";
 
 var app = express();
@@ -13,10 +12,9 @@ var port = 3000;
 app.use(cors());
 app.use(logger("dev"));
 app.use(express.json());
-app.use(express.urlencoded({extended: false}));
+app.use(express.urlencoded({extended: true}));
 app.use(cookieParser());
 app.use(express.static(path.join(new URL(import.meta.url).pathname, "public")));
-app.use(fileUpload());
 
 app.use("/", indexRouter);
 

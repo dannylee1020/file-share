@@ -1,6 +1,7 @@
 import Upload from "./components/Upload";
 import Files from "./components/Files";
-import {useEffect, useState} from "react";
+import Header from "./components/Header";
+import {useState} from "react";
 
 function App() {
     const [files, setFiles] = useState();
@@ -18,9 +19,12 @@ function App() {
 
     return (
         <div className="w-screen">
-            <div className="flex flex-col gap-20 ml-10 mt-20">
+            <div className>
+                <Header></Header>
+            </div>
+            <div className="flex flex-col gap-20 mt-20 ml-10">
                 <Upload fetchFiles={fetch_files}></Upload>
-                <Files fetchFiles={fetch_files} files={files}></Files>
+                {/* <Files fetchFiles={fetch_files} files={files}></Files> */}
             </div>
         </div>
     );

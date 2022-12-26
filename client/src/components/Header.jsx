@@ -1,4 +1,10 @@
+// TODO: add authentication functionality
+
 function Header() {
+    const handleAuth = () => {
+        // * fetch data from the server endpoint that handles authentication
+    };
+
     return (
         <div className="border-b flex items-center justify-between mr-10">
             <div className="text-xl bold ml-10 p-2">FileShare</div>

@@ -1,10 +1,12 @@
 import express from "express";
 import multer from "multer";
+
 import {
     upload_file,
     retrieve_files,
     download_file,
 } from "../controller/file_controller.js";
+import {auth_user} from "../controller/auth_controller.js";
 
 var router = express.Router();
 const upload = multer({dest: "dest/"});
@@ -28,6 +30,10 @@ router.get("/files", async (req, res) => {
     const {data, error} = await retrieve_files();
 
     res.send({data, error});
+});
+
+router.get("/auth", (req, res) => {
+    // handle authentication here
 });
 
 export default router;

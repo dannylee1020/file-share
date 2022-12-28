@@ -1,5 +1,6 @@
 import express from "express";
 import multer from "multer";
+import fs from "fs";
 
 import {
     upload_file,
@@ -13,23 +14,25 @@ const upload = multer({dest: "dest/"});
 
 // upload file to server
 router.post("/upload", upload.single("file"), async function (req, res) {
-    const {data, error} = await upload_file(req.file, req.file.originalname);
+    let fileBody = fs.readFileSync(req.file.path);
+    const {data, error} = await upload_file(fileBody, req.file.originalname);
+
     res.send({data, error});
 });
 
 // download file from server
 router.post("/download", async function (req, res) {
     let filename = req.body.filename;
-    const {data, error} = await download_file(filename);
 
-    res.send({data, error});
+    const message = await download_file(filename);
+    res.send({message: message});
 });
 
 // get all files in a bucket
 router.get("/files", async (req, res) => {
-    const {data, error} = await retrieve_files();
+    const {newData, error} = await retrieve_files();
 
-    res.send({data, error});
+    res.send({newData, error});
 });
 
 router.get("/auth", (req, res) => {

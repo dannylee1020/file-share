@@ -8,7 +8,7 @@ function Upload() {
     };
 
     const handleSubmit = async (e) => {
-        let endpoint = "http://localhost:3000";
+        let endpoint = "http://localhost:3000/upload";
         const formData = new FormData();
         formData.append("file", e.target.files[0]);
 

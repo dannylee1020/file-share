@@ -15,7 +15,9 @@ function Files(props) {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({filename}),
-        });
+        })
+            .then((res) => res.json())
+            .then((data) => console.log(data));
     };
 
     // TODO: when file is clicked for download, window should pop up to select where to store file
@@ -30,7 +32,7 @@ function Files(props) {
                 </thead>
                 <tbody>
                     {props.files ? (
-                        props.files.data.map((val, idx) => {
+                        props.files.newData.map((val, idx) => {
                             return (
                                 <tr
                                     key={idx}

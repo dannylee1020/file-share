@@ -5,22 +5,42 @@ function Files(props) {
         props.fetchFiles();
     }, []);
 
+    //! data is not getting written correctly to the file.
+    //?: how to send binary data to client and write the file here?
+    const writeFile = async (handler, data) => {
+        const writable = await handler.createWritable();
+
+        console.log(JSON.stdata);
+
+        const dataObj = {type: "write", data: data};
+
+        await writable.write(dataObj);
+        await writable.close();
+
+        console.log("file is written successfully");
+    };
+
     const handleClick = async (e) => {
         let filename = e.target.textContent;
         let endpoint = "http://localhost:3000/download";
 
-        await fetch(endpoint, {
+        let handler = await window.showSaveFilePicker({
+            suggestedName: filename,
+        });
+
+        let data = await fetch(endpoint, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({filename}),
-        })
-            .then((res) => res.json())
-            .then((data) => console.log(data));
+        });
+
+        await writeFile(handler, data.body).then(() =>
+            console.log("file downloaded successfully")
+        );
     };
 
-    // TODO: when file is clicked for download, window should pop up to select where to store file
     return (
         <div>
             <table className="table-auto w-5/6">

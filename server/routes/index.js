@@ -7,6 +7,7 @@ import {
     retrieve_files,
     download_file,
 } from "../controller/file_controller.js";
+
 import {auth_user} from "../controller/auth_controller.js";
 
 var router = express.Router();
@@ -23,9 +24,9 @@ router.post("/upload", upload.single("file"), async function (req, res) {
 // download file from server
 router.post("/download", async function (req, res) {
     let filename = req.body.filename;
+    const data = await download_file(filename, res);
 
-    const message = await download_file(filename);
-    res.send({message: message});
+    res.status(200).send(data);
 });
 
 // get all files in a bucket

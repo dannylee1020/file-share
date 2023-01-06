@@ -18,11 +18,11 @@ const download_file = async function (name, res) {
         throw error;
     }
 
-    const buffer = await new ArrayBuffer(data);
+    console.log(data);
 
-    // const blob = data;
-    // const buffer = Buffer.from(await blob.arrayBuffer());
-    // await fs.promises.writeFile(filePath, buffer);
+    // convert blob into buffer and send to client
+    const blob = data;
+    const buffer = Buffer.from(await blob.arrayBuffer());
 
     return buffer;
 };

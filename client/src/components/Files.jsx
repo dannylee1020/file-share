@@ -5,21 +5,16 @@ function Files(props) {
         props.fetchFiles();
     }, []);
 
-    //! data is not getting written correctly to the file.
-    //?: how to send binary data to client and write the file here?
+    // write data to file using file handler api
     const writeFile = async (handler, data) => {
         const writable = await handler.createWritable();
-
-        console.log(JSON.stdata);
-
         const dataObj = {type: "write", data: data};
 
         await writable.write(dataObj);
         await writable.close();
-
-        console.log("file is written successfully");
     };
 
+    // fetch data from server and write it as a new file
     const handleClick = async (e) => {
         let filename = e.target.textContent;
         let endpoint = "http://localhost:3000/download";
@@ -28,17 +23,19 @@ function Files(props) {
             suggestedName: filename,
         });
 
-        let data = await fetch(endpoint, {
+        await fetch(endpoint, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({filename}),
-        });
-
-        await writeFile(handler, data.body).then(() =>
-            console.log("file downloaded successfully")
-        );
+        })
+            .then((res) => res.arrayBuffer())
+            .then(async (data) => {
+                await writeFile(handler, data).then(
+                    console.log("file downloaded successfully")
+                );
+            });
     };
 
     return (

@@ -18,8 +18,6 @@ const download_file = async function (name, res) {
         throw error;
     }
 
-    console.log(data);
-
     // convert blob into buffer and send to client
     const blob = data;
     const buffer = Buffer.from(await blob.arrayBuffer());

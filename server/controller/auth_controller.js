@@ -1,11 +1,16 @@
 import supabase from "../config.js";
-import {body} from "express-validator";
 
-const auth_user = async () => {
+const authenticate_user = async (req) => {
     // call supabase api for authentication
-};
+    let body = req.body;
 
-const validate_register = () => {};
+    const {data, error} = await supabase.auth.signInWithPassword({
+        email: body.email,
+        password: body.password,
+    });
+
+    return {data, error};
+};
 
 const register_user = async (body) => {
     const {data, error} = await supabase.auth.signUp({
@@ -22,4 +27,4 @@ const register_user = async (body) => {
     return {data, error};
 };
 
-export {auth_user, register_user};
+export {authenticate_user, register_user};

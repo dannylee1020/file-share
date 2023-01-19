@@ -9,7 +9,10 @@ import {
     download_file,
 } from "../controller/file_controller.js";
 
-import {register_user} from "../controller/auth_controller.js";
+import {
+    register_user,
+    authenticate_user,
+} from "../controller/auth_controller.js";
 
 var router = express.Router();
 const upload = multer({dest: "dest/"});
@@ -37,9 +40,26 @@ router.get("/files", async (req, res) => {
     res.send({newData, error});
 });
 
-router.get("/auth", (req, res) => {
-    // handle authentication here
-});
+router.post(
+    "/login",
+
+    body("email").isEmail().normalizeEmail({all_lowercase: true}),
+    body("password").trim().escape(),
+
+    async (req, res) => {
+        let result = validationResult(req);
+
+        if (!result.isEmpty()) {
+            return res.json({errors: result.array()});
+        }
+
+        let {data, error} = await authenticate_user(req);
+
+        error
+            ? res.status(400).send(error)
+            : res.status(200).json({message: "OK", data: data});
+    }
+);
 
 // register users to the app
 router.post(
@@ -50,18 +70,18 @@ router.post(
     body("password").trim().escape(),
     body("email").isEmail().normalizeEmail({all_lowercase: true}),
 
-    (req, res) => {
+    async (req, res) => {
         let result = validationResult(req);
 
         if (!result.isEmpty()) {
             return res.json({errors: result.array()});
         }
 
-        let {data, error} = register_user(req.body);
+        let {data, error} = await register_user(req.body);
 
         error
-            ? res.status(404).send(error)
-            : res.status(200).json({message: "OK"});
+            ? res.status(400).send(error)
+            : res.status(200).json({message: "OK", data: data});
     }
 );
 

@@ -1,17 +1,55 @@
+import {useState} from "react";
+import {useNavigate, redirect} from "react-router-dom";
+
 function Login() {
+    const [data, setData] = useState({});
+    const [error, setError] = useState();
+
+    const navigate = useNavigate();
+
+    const handleChange = (e) => {
+        setData({
+            ...data,
+            [e.target.name]: e.target.value,
+        });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        let endpoint = "http://localhost:3000/login";
+
+        await fetch(endpoint, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                if (data.data) {
+                    navigate("/");
+                } else {
+                    setError(data);
+                }
+            });
+    };
+
     return (
         <div className="flex justify-center mt-20">
             <div className="p-6 rounded-lg shadow-lg bg-white w-1/3">
-                <form>
+                <form onSubmit={handleSubmit}>
                     <div className="form-group mb-6">
                         <label
-                            for="exampleInputEmail2"
+                            htmlFor="exampleInputEmail2"
                             className="form-label inline-block mb-2 text-gray-700"
                         >
                             Email address
                         </label>
                         <input
                             type="email"
+                            onChange={handleChange}
                             className="form-control
                                         block
                                         w-full
@@ -29,18 +67,20 @@ function Login() {
                                         focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
                             id="exampleInputEmail2"
                             aria-describedby="emailHelp"
+                            name="email"
                             placeholder="Enter email"
                         />
                     </div>
                     <div className="form-group mb-6">
                         <label
-                            for="exampleInputPassword2"
+                            htmlFor="exampleInputPassword2"
                             className="form-label inline-block mb-2 text-gray-700"
                         >
                             Password
                         </label>
                         <input
                             type="password"
+                            onChange={handleChange}
                             className="form-control block
                                         w-full
                                         px-3
@@ -56,6 +96,7 @@ function Login() {
                                         m-0
                                         focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
                             id="exampleInputPassword2"
+                            name="password"
                             placeholder="Password"
                         />
                     </div>
@@ -63,12 +104,14 @@ function Login() {
                         <div className="form-group form-check">
                             <input
                                 type="checkbox"
+                                onChange={handleChange}
                                 className="form-check-input appearance-none h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
                                 id="exampleCheck2"
+                                name="checkbox"
                             />
                             <label
                                 className="form-check-label inline-block text-gray-800"
-                                for="exampleCheck2"
+                                htmlFor="exampleCheck2"
                             >
                                 Remember me
                             </label>
@@ -80,9 +123,15 @@ function Login() {
                             Forgot password?
                         </a>
                     </div>
+                    {error ? (
+                        <strong className="text-rose-500 text-xs">
+                            The email or password you entered is incorrect.
+                        </strong>
+                    ) : null}
                     <button
                         type="submit"
                         className="w-full
+                                    mt-2
                                     px-6
                                     py-2.5
                                     bg-blue-600

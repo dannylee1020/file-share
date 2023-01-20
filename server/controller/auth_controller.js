@@ -27,4 +27,10 @@ const register_user = async (body) => {
     return {data, error};
 };
 
-export {authenticate_user, register_user};
+const logout_user = async () => {
+    const {error} = await supabase.auth.signOut();
+
+    return {error};
+};
+
+export {authenticate_user, register_user, logout_user};

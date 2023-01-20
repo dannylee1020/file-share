@@ -2,16 +2,15 @@ import express from "express";
 import multer from "multer";
 import fs from "fs";
 import {body, validationResult} from "express-validator";
-
 import {
     upload_file,
     retrieve_files,
     download_file,
 } from "../controller/file_controller.js";
-
 import {
     register_user,
     authenticate_user,
+    logout_user,
 } from "../controller/auth_controller.js";
 
 var router = express.Router();
@@ -40,6 +39,7 @@ router.get("/files", async (req, res) => {
     res.send({newData, error});
 });
 
+// authenticate user
 router.post(
     "/login",
 
@@ -60,6 +60,15 @@ router.post(
             : res.status(200).json({message: "OK", data: data});
     }
 );
+
+// logout user
+router.get("/logout", (req, res) => {
+    const {error} = logout_user();
+
+    error
+        ? res.status(400).send({err: error})
+        : res.status(200).json({message: "logout successful"});
+});
 
 // register users to the app
 router.post(

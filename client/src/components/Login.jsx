@@ -1,5 +1,5 @@
 import {useState} from "react";
-import {useNavigate, redirect} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 
 function Login() {
     const [data, setData] = useState({});
@@ -27,11 +27,19 @@ function Login() {
             body: JSON.stringify(data),
         })
             .then((res) => res.json())
-            .then((data) => {
-                if (data.data) {
+            .then((res) => {
+                if (res.data) {
                     navigate("/");
+
+                    // store user's session
+                    // ! this might not be the safest way to persist user's session state
+                    // ? which subset of session data should I use to persist session and be safe?
+                    localStorage.setItem(
+                        "session",
+                        JSON.stringify(res.data.session)
+                    );
                 } else {
-                    setError(data);
+                    setError(res);
                 }
             });
     };
